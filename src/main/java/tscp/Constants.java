@@ -48,15 +48,6 @@ public interface Constants {
             {-11, -10, -9, -1, 1, 9, 10, 11}
     };
 
-
-    /* This is the castle_mask array. We can use it to determine
-       the castling permissions after a move. What we do is
-	   logical-AND the castle bits with the castle_mask bits for
-	   both of the move's squares. Let's say castle is 1, meaning
-	   that white can still castle kingside. Now we play a move
-	   where the rook on h1 gets captured. We AND castle with
-	   castle_mask[63], so we have 1&14, and castle becomes 0 and
-	   white can't castle kingside anymore. */
     int[] castle_mask = {7, 15, 15, 15, 3, 15, 15, 11, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 13, 15, 15, 15, 12, 15, 15, 14};
 
     String[] piece_char_light = {"P", "N", "B", "R", "Q", "K"};

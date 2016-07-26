@@ -28,11 +28,7 @@ public class PerftSpeed {
             System.out.println("Depth " + depth + " : " + (t1 - t0) / 1000000000 + " sec");
             System.out.println("Count = " + res.moveCount);
         }
-//        res = perft(board, 2);
-//        res = perft(board, 3);
-//        res = perft(board, 4);
-//        res = perft(board, 5);
-//        res = perft(board, 6);
+
     }
 
     private static PerftResult perft(Board board, int depth) {
