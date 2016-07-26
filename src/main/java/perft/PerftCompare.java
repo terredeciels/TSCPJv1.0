@@ -3,12 +3,12 @@ package perft;
 import tools.FenToBoard;
 import tscp.Board;
 import tscp.Constants;
+import tscp.Move;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.List;
-import tscp.Move;
 
 /**
  * Compare perft results against the file supplied by ROCE epd file

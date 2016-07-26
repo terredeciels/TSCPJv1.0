@@ -16,9 +16,9 @@ public class Board implements Constants {
      * queenside.
      */
     public int ep;
-    public int fifty;
     public List<Move> pseudomoves = new ArrayList<>();
-    public UndoMove um = new UndoMove();
+    private int fifty;
+    private UndoMove um = new UndoMove();
 
     public Board() {
 //        init_board();
@@ -29,8 +29,6 @@ public class Board implements Constants {
      * board.piece = piece; board.side = side; board.xside = xside; board.castle
      * = castle; board.ep = ep; board.fifty = fifty; board.gen_dat = new
      * ArrayList<>(); board.hist_dat = new UndoMove(); return board; }
-     *
-     * @param board
      */
     public Board(Board board) {
         color = board.color;
@@ -43,32 +41,32 @@ public class Board implements Constants {
         pseudomoves = new ArrayList<>();
         um = new UndoMove();
     }
-
-    public static String move_str(Move m) {
-        String str;
-        byte c;
-
-        if ((m.bits & 32) != 0) {
-            switch (m.promote) {
-                case KNIGHT:
-                    c = (byte) 'n';
-                    break;
-                case BISHOP:
-                    c = (byte) 'b';
-                    break;
-                case ROOK:
-                    c = (byte) 'r';
-                    break;
-                default:
-                    c = (byte) 'q';
-                    break;
-            }
-            str = String.format("%c%d%c%d%c", (m.from & 7) + 'a', 8 - (m.from >> 3), (m.to & 7) + 'a', 8 - (m.to >> 3), c);
-        } else {
-            str = String.format("%c%d%c%d", (m.from & 7) + 'a', 8 - (m.from >> 3), (m.to & 7) + 'a', 8 - (m.to >> 3));
-        }
-        return str;
-    }
+//
+//    public static String move_str(Move m) {
+//        String str;
+//        byte c;
+//
+//        if ((m.bits & 32) != 0) {
+//            switch (m.promote) {
+//                case KNIGHT:
+//                    c = (byte) 'n';
+//                    break;
+//                case BISHOP:
+//                    c = (byte) 'b';
+//                    break;
+//                case ROOK:
+//                    c = (byte) 'r';
+//                    break;
+//                default:
+//                    c = (byte) 'q';
+//                    break;
+//            }
+//            str = String.format("%c%d%c%d%c", (m.from & 7) + 'a', 8 - (m.from >> 3), (m.to & 7) + 'a', 8 - (m.to >> 3), c);
+//        } else {
+//            str = String.format("%c%d%c%d", (m.from & 7) + 'a', 8 - (m.from >> 3), (m.to & 7) + 'a', 8 - (m.to >> 3));
+//        }
+//        return str;
+//    }
 
     /**
      * public final void init_board() { pseudomoves = new ArrayList<>(); um =
@@ -76,7 +74,7 @@ public class Board implements Constants {
      * piece[i] = init_piece[i]; } side = LIGHT; xside = DARK; castle = 15; ep =
      * -1; fifty = 0; } @param s @return
      */
-    public int in_check(int s) {
+    private int in_check(int s) {
         int i;
 
         for (i = 0; i < 64; ++i) {
@@ -87,7 +85,7 @@ public class Board implements Constants {
         return TRUE; // shouldn't get here
     }
 
-    public int attack(int sq, int s) {
+    private int attack(int sq, int s) {
         int i;
         int j;
         int n;
@@ -112,7 +110,7 @@ public class Board implements Constants {
                     }
                 } else {
                     for (j = 0; j < offsets[piece[i]]; ++j) {
-                        for (n = i;;) {
+                        for (n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
@@ -171,7 +169,7 @@ public class Board implements Constants {
                     }
                 } else {
                     for (j = 0; j < offsets[piece[i]]; ++j) {
-                        for (n = i;;) {
+                        for (n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
@@ -229,7 +227,7 @@ public class Board implements Constants {
         }
     }
 
-    public void gen_push(int from, int to, int bits) {
+    private void gen_push(int from, int to, int bits) {
         if ((bits & 16) != 0) {
             if (side == LIGHT) {
                 if (to <= H8) {
@@ -247,11 +245,11 @@ public class Board implements Constants {
 //        g.promote = 0;
 //        g.bits = (byte) bits;
 //        pseudomoves.add(g);
-         pseudomoves.add(new Move((byte) from, (byte) to,(byte) 0, (byte) bits));
+        pseudomoves.add(new Move((byte) from, (byte) to, (byte) 0, (byte) bits));
 
     }
 
-    public void gen_promote(int from, int to, int bits) {
+    private void gen_promote(int from, int to, int bits) {
         for (int i = KNIGHT; i <= QUEEN; ++i) {
 //            Move g = new Move();
 //            g.from = (byte) from;
@@ -259,7 +257,7 @@ public class Board implements Constants {
 //            g.promote = (byte) i;
 //            g.bits = (byte) (bits | 32);
 //            pseudomoves.add(g);
-               pseudomoves.add(new Move((byte) from, (byte) to,(byte) i,(byte) (bits | 32)));
+            pseudomoves.add(new Move((byte) from, (byte) to, (byte) i, (byte) (bits | 32)));
         }
     }
 
@@ -430,25 +428,25 @@ public class Board implements Constants {
             }
         }
     }
-
-    public void print_board() {
-        System.out.print("\n8 ");
-        for (int i = 0; i < 64; ++i) {
-            switch (color[i]) {
-                case EMPTY:
-                    System.out.print(". ");
-                    break;
-                case LIGHT:
-                    System.out.printf(piece_char_light[piece[i]] + " ");
-                    break;
-                case DARK:
-                    System.out.printf(piece_char_dark[piece[i]] + " ");
-                    break;
-            }
-            if ((i + 1) % 8 == 0 && i != 63) {
-                System.out.printf("\n%d ", 7 - (i >> 3));
-            }
-        }
-        System.out.print("\n\n   a b c d e f g h\n\n");
-    }
+//
+//    public void print_board() {
+//        System.out.print("\n8 ");
+//        for (int i = 0; i < 64; ++i) {
+//            switch (color[i]) {
+//                case EMPTY:
+//                    System.out.print(". ");
+//                    break;
+//                case LIGHT:
+//                    System.out.printf(piece_char_light[piece[i]] + " ");
+//                    break;
+//                case DARK:
+//                    System.out.printf(piece_char_dark[piece[i]] + " ");
+//                    break;
+//            }
+//            if ((i + 1) % 8 == 0 && i != 63) {
+//                System.out.printf("\n%d ", 7 - (i >> 3));
+//            }
+//        }
+//        System.out.print("\n\n   a b c d e f g h\n\n");
+//    }
 }
