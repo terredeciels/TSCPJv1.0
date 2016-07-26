@@ -30,54 +30,45 @@ public class Board implements Constants {
         um = new UndoMove();
     }
 
-    private int in_check(int s) {
-        int i;
-
-        for (i = 0; i < 64; ++i) {
-            if (piece[i] == KING && color[i] == s) {
-                return attack(i, s ^ 1);
-            }
-        }
-        return TRUE; // shouldn't get here
+    private boolean in_check(int s) {
+        for (int i = 0; i < 64; ++i)
+            if (piece[i] == KING && color[i] == s) return attack(i, s ^ 1);
+        return true; // shouldn't get here
     }
 
-    private int attack(int sq, int s) {
-        int i;
-        int j;
-        int n;
-
-        for (i = 0; i < 64; ++i) {
+    private boolean attack(int sq, int s) {
+          for (int i = 0; i < 64; ++i) {
             if (color[i] == s) {
                 if (piece[i] == PAWN) {
                     if (s == LIGHT) {
                         if ((i & 7) != 0 && i - 9 == sq) {
-                            return TRUE;
+                            return true;
                         }
                         if ((i & 7) != 7 && i - 7 == sq) {
-                            return TRUE;
+                            return true;
                         }
                     } else {
                         if ((i & 7) != 0 && i + 7 == sq) {
-                            return TRUE;
+                            return true;
                         }
                         if ((i & 7) != 7 && i + 9 == sq) {
-                            return TRUE;
+                            return true;
                         }
                     }
                 } else {
-                    for (j = 0; j < offsets[piece[i]]; ++j) {
-                        for (n = i; ; ) {
+                    for (int j = 0; j < offsets[piece[i]]; ++j) {
+                        for (int n = i; ; ) {
                             n = mailbox[mailbox64[n] + offset[piece[i]][j]];
                             if (n == -1) {
                                 break;
                             }
                             if (n == sq) {
-                                return TRUE;
+                                return true;
                             }
                             if (color[n] != EMPTY) {
                                 break;
                             }
-                            if (slide[piece[i]] == FALSE) {
+                            if (!slide[piece[i]]) {
                                 break;
                             }
                         }
@@ -85,7 +76,7 @@ public class Board implements Constants {
                 }
             }
         }
-        return FALSE;
+        return false;
     }
 
     public void gen() {
@@ -137,7 +128,7 @@ public class Board implements Constants {
                                 break;
                             }
                             gen_push(i, n, 0);
-                            if (slide[piece[i]] == FALSE) {
+                            if (!slide[piece[i]]) {
                                 break;
                             }
                         }
@@ -200,45 +191,38 @@ public class Board implements Constants {
     }
 
     private void gen_promote(int from, int to, int bits) {
-        for (int i = KNIGHT; i <= QUEEN; ++i) {
+        for (int i = KNIGHT; i <= QUEEN; ++i)
             pseudomoves.add(new Move((byte) from, (byte) to, (byte) i, (byte) (bits | 32)));
-        }
     }
 
-    public int makemove(Move m) {
+    public boolean makemove(Move m) {
         if ((m.bits & 2) != 0) {
             int from;
             int to;
 
-            if (in_check(side) != 0) {
-                return FALSE;
-            }
+            if (in_check(side)) return false;
             switch (m.to) {
                 case 62:
-                    if (color[F1] != EMPTY || color[G1] != EMPTY || attack(F1, xside) != 0 || attack(G1, xside) != 0) {
-                        return FALSE;
-                    }
+                    if (color[F1] != EMPTY || color[G1] != EMPTY || attack(F1, xside) || attack(G1, xside))
+                        return false;
                     from = H1;
                     to = F1;
                     break;
                 case 58:
-                    if (color[B1] != EMPTY || color[C1] != EMPTY || color[D1] != EMPTY || attack(C1, xside) != 0 || attack(D1, xside) != 0) {
-                        return FALSE;
-                    }
+                    if (color[B1] != EMPTY || color[C1] != EMPTY || color[D1] != EMPTY || attack(C1, xside) || attack(D1, xside))
+                        return false;
                     from = A1;
                     to = D1;
                     break;
                 case 6:
-                    if (color[F8] != EMPTY || color[G8] != EMPTY || attack(F8, xside) != 0 || attack(G8, xside) != 0) {
-                        return FALSE;
-                    }
+                    if (color[F8] != EMPTY || color[G8] != EMPTY || attack(F8, xside) || attack(G8, xside))
+                        return false;
                     from = H8;
                     to = F8;
                     break;
                 case 2:
-                    if (color[B8] != EMPTY || color[C8] != EMPTY || color[D8] != EMPTY || attack(C8, xside) != 0 || attack(D8, xside) != 0) {
-                        return FALSE;
-                    }
+                    if (color[B8] != EMPTY || color[C8] != EMPTY || color[D8] != EMPTY || attack(C8, xside) || attack(D8, xside))
+                        return false;
                     from = A8;
                     to = D8;
                     break;
@@ -300,12 +284,12 @@ public class Board implements Constants {
 
         side ^= 1;
         xside ^= 1;
-        if (in_check(xside) != 0) {
+        if (in_check(xside)) {
             takeback();
-            return FALSE;
+            return false;
         }
 
-        return TRUE;
+        return true;
     }
 
     public void takeback() {

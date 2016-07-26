@@ -8,7 +8,6 @@ import tscp.Move;
 import java.io.IOException;
 import java.util.List;
 
-import static tscp.Constants.TRUE;
 
 public class PerftSpeed {
 
@@ -41,7 +40,7 @@ public class PerftSpeed {
         board.gen();
         List<Move> moves = board.pseudomoves;
         for (Move move : moves) {
-            if (board.makemove(move) == TRUE) {
+            if (board.makemove(move)) {
                 PerftResult subPerft = perft(new Board(board), depth - 1);
                 board.takeback();
                 result.moveCount += subPerft.moveCount;
